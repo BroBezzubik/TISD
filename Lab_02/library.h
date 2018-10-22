@@ -1,34 +1,72 @@
 #ifndef LIBRARY_H
 #define LIBRARY_H
 
-#define TABLE_SIZE 1000
-#define BUFFER_SIZE 50
+#define BUFFER_SIZE 40
+#define LIBRARY_SIZE 100
+#define STRING_BUFFER 100
 
-namespace library{
+const char DEF_LIB = "LIB.CSV";
+
+namespace library {
     struct Library;
-    struct Book;
+    struct Key;
+    struct keyTable;
     struct TechBook;
     struct ArtBook;
     struct ChildBook;
+    struct Book;
+
+    enum BOOK_TYPE_KEY{ TECH, ART, CHILD };
+    enum TECH_TYPE{ RUSSAIN, TRANSLATED };
+    enum ART_TYPE{ ROMAN, PLAY, POEM };
+    enum CHILD_TYPE{FAIRY_TAILS, CHILD_POEM};
+
     union BookType;
-    enum bookTypeKey;
-    enum TechBookType;
-    enum ArtBookType;
-    enum ChildBookType;
+
+    void loadLibrary(Library &lib, char *file = DEF_LIB);
+    void saveLibrary(Library &lib, char *file = DEF_LIB);
 }
 
-struct library::Library{
-    char fileName[BUFFER_SIZE];
-    Book table[TABLE_SIZE];
-    int bookCout;
-}
+struct library::Key{
+    int libraryIndex;
+    int pageCout;
+};
+
+struct library::keyTable{
+    Key table[LIBRARY_SIZE];
+};
+
+struct library::TechBook
+{
+    TECH_TYPE type;
+    int year;
+};
+
+struct library::ArtBook{
+    ART_TYPE type;
+};
+
+struct library::ChildBook{
+    CHILD_TYPE type;
+};
+
+union library::BookType{
+    TechBook tech;
+    ArtBook art;
+    ChildBook child;
+};
 
 struct library::Book{
-    char autorName[BUFFER_SIZE];
     char bookName[BUFFER_SIZE];
+    char autor[BUFFER_SIZE];
     char publisher[BUFFER_SIZE];
     int pageCout;
-    BookType type;
-}
+    BOOK_TYPE_KEY bookTypeKey;
+    BookType bookType;
+};
 
+struct library::Library{
+    Book table[LIBRARY_SIZE];
+    long int cout;
+};
 #endif // LIBRARY_H
