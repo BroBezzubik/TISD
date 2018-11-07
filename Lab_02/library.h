@@ -3,9 +3,7 @@
 
 #define BUFFER_SIZE 40
 #define LIBRARY_SIZE 100
-#define STRING_BUFFER 100
-
-const char DEF_LIB = "LIB.CSV";
+#define STRING_BUFFER 200
 
 namespace library {
     struct Library;
@@ -16,15 +14,18 @@ namespace library {
     struct ChildBook;
     struct Book;
 
-    enum BOOK_TYPE_KEY{ TECH, ART, CHILD };
-    enum TECH_TYPE{ RUSSAIN, TRANSLATED };
-    enum ART_TYPE{ ROMAN, PLAY, POEM };
-    enum CHILD_TYPE{FAIRY_TAILS, CHILD_POEM};
+    enum BOOK_TYPE_KEY{ TECH = 0, ART, CHILD };
+    enum TECH_TYPE{ RUSSAIN = 0, TRANSLATED };
+    enum ART_TYPE{ ROMAN = 0, PLAY, POEM };
+    enum CHILD_TYPE{FAIRY_TAILS = 0, CHILD_POEM};
+    enum OPERATION_KEY{OUT_PUT = 0, ADD_BOOK, DELETE_BOOK, SORT_TABLE};
 
     union BookType;
 
-    void loadLibrary(Library &lib, char *file = DEF_LIB);
-    void saveLibrary(Library &lib, char *file = DEF_LIB);
+    void loadBook(Library lib, char *bookData);
+    void loadLib(Library lib, char *fileName);
+    void updateKeyTable(Library &lib, keyTable &table);
+    void loop(Library &lib, keyTable &table);
 }
 
 struct library::Key{
@@ -67,6 +68,6 @@ struct library::Book{
 
 struct library::Library{
     Book table[LIBRARY_SIZE];
-    long int cout;
+    long int count;
 };
 #endif // LIBRARY_H
