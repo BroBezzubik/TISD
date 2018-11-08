@@ -22,8 +22,8 @@ namespace library {
 
     union BookType;
 
-    void loadBook(Library lib, char *bookData);
-    void loadLib(Library lib, char *fileName);
+    void loadBook(Library &lib, char *bookData);
+    void loadLib(Library &lib, char *fileName);
     void updateKeyTable(Library &lib, keyTable &table);
     void loop(Library &lib, keyTable &table);
 }

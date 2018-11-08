@@ -2,35 +2,31 @@
 #include <iostream>
 #include <fstream>
 #include <cstring>
+#include <string>
+#include <vector>
+#include <sstream>
 
 using namespace std;
 
-void library::loadBook(Library lib, char *bookData){
-    char *ptr = bookData;
-    int symCount = 0;
-    for (int index = 0; bookData[index] != '\0'; index++){
-        symCount++;
-        if (bookData[index] == ','){
-            char str[20];
-            memset(str, '\0', 20);
-            strncpy(str, ptr, symCount - 1);
-            cout << str << endl;
-            ptr = &ptr[symCount];
-            symCount = -0;
-        } else {
-
-}
+vector<string> split(const string &s, char delimeter){
+    vector<string> tokens;
+    string token;
+    istringstream tokenStream(s);
+    while (getline(tokenStream, token, delimeter)){
+        tokens.push_back(token);
     }
-    char str[20];
-    memset(str, '\0', 20);
-    strncpy(str, ptr, symCount);
-    cout << str << endl;
-    ptr = &ptr[symCount];
-    symCount = 0;
-
+    return tokens;
 }
 
-void library::loadLib(Library lib, char *fileName){
+void library::loadBook(Library &lib, char *bookData){
+    string data = bookData;
+    vector<string> tokens = split(data, ',');
+    library::Book *book = &lib.table[lib.count];
+    memset(book->bookName,'a', BUFFER_SIZE);
+    cout << book->bookName << endl;
+}
+
+void library::loadLib(Library &lib, char *fileName){
     ifstream dataStream;
     dataStream.open(fileName, ios::in);
     if (dataStream.is_open()){
