@@ -4,11 +4,10 @@
 using namespace std;
 
 int main(){
-    char fileName[] = "LIB.CSV";
+    char libFile[] = "LIB.CSV";
     library::Library lib;
-    library::loadLib(lib, fileName);
-    library::keyTable keys;
-    library::updateKeyTable(lib, keys);
-    library::loop(lib, keys);
+    library::loadLib(lib, libFile);
+//    library::loop(lib, libFile);
 }
+
 

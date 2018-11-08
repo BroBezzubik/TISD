@@ -1,73 +1,70 @@
 #ifndef LIBRARY_H
 #define LIBRARY_H
 
-#define BUFFER_SIZE 40
-#define LIBRARY_SIZE 100
-#define STRING_BUFFER 200
+#include <string>
+#include <vector>
+
+#define STRING_BUFFER 30
+#define LIBRARY_MAX_SIZE 100
 
 namespace library {
-    struct Library;
-    struct Key;
-    struct keyTable;
+    enum BOOK_TYPE{TECH = 0, ART, CHILD};
+    enum TECH_TYPE{RUSSIAN, TRANSLATED};
+    enum ART_TYPE{NOVEL, PLAY, POEM};
+    enum CHILD_TYPE{CHILD_POEM, FAIRY_TAILS};
+
     struct TechBook;
-    struct ArtBook;
     struct ChildBook;
+    struct ArtBook;
     struct Book;
-
-    enum BOOK_TYPE_KEY{ TECH = 0, ART, CHILD };
-    enum TECH_TYPE{ RUSSAIN = 0, TRANSLATED };
-    enum ART_TYPE{ ROMAN = 0, PLAY, POEM };
-    enum CHILD_TYPE{FAIRY_TAILS = 0, CHILD_POEM};
-    enum OPERATION_KEY{OUT_PUT = 0, ADD_BOOK, DELETE_BOOK, SORT_TABLE};
-
+    struct Key;
+    struct Library;
     union BookType;
 
-    void loadBook(Library &lib, char *bookData);
-    void loadLib(Library &lib, char *fileName);
-    void updateKeyTable(Library &lib, keyTable &table);
-    void loop(Library &lib, keyTable &table);
+    std::vector<std::string> split(const std::string &str);
+    void loadBook(Book &book, const std::string &buffer);
+    void loadKey(const Book &book, Key &key);
+    void loadLib(Library &lib, const char *libFile);
+    void loop(Library &lib, const char *libFile);
 }
 
-struct library::Key{
-    int libraryIndex;
-    int pageCout;
-};
-
-struct library::keyTable{
-    Key table[LIBRARY_SIZE];
-};
-
-struct library::TechBook
-{
-    TECH_TYPE type;
+struct library::TechBook{
+    TECH_TYPE bookType;
     int year;
 };
 
-struct library::ArtBook{
-    ART_TYPE type;
+struct library::ChildBook{
+    CHILD_TYPE bookType;
 };
 
-struct library::ChildBook{
-    CHILD_TYPE type;
+struct library::ArtBook{
+    ART_TYPE bookType;
 };
 
 union library::BookType{
     TechBook tech;
-    ArtBook art;
     ChildBook child;
+    ArtBook art;
 };
 
 struct library::Book{
-    char bookName[BUFFER_SIZE];
-    char autor[BUFFER_SIZE];
-    char publisher[BUFFER_SIZE];
-    int pageCout;
-    BOOK_TYPE_KEY bookTypeKey;
-    BookType bookType;
+    char bookName[STRING_BUFFER];
+    char author[STRING_BUFFER];
+    char publisher[STRING_BUFFER];
+    int pageCount;
+    BOOK_TYPE bookType;
+    union BookType type;
+};
+
+struct library::Key{
+    Book *book;
+    int page;
 };
 
 struct library::Library{
-    Book table[LIBRARY_SIZE];
-    long int count;
+    Book books[LIBRARY_MAX_SIZE];
+    Key keys[LIBRARY_MAX_SIZE];
+    int bookCout;
 };
+
 #endif // LIBRARY_H

@@ -1,47 +1,39 @@
 #include "library.h"
-#include <iostream>
 #include <fstream>
-#include <cstring>
+#include <assert.h>
 #include <string>
-#include <vector>
+#include <iostream>
 #include <sstream>
+#include <cstring>
 
-using namespace std;
-
-vector<string> split(const string &s, char delimeter){
-    vector<string> tokens;
-    string token;
-    istringstream tokenStream(s);
-    while (getline(tokenStream, token, delimeter)){
-        tokens.push_back(token);
-    }
-    return tokens;
-}
-
-void library::loadBook(Library &lib, char *bookData){
-    string data = bookData;
-    vector<string> tokens = split(data, ',');
-    library::Book *book = &lib.table[lib.count];
-    memset(book->bookName,'a', BUFFER_SIZE);
-    cout << book->bookName << endl;
-}
-
-void library::loadLib(Library &lib, char *fileName){
-    ifstream dataStream;
-    dataStream.open(fileName, ios::in);
-    if (dataStream.is_open()){
-        char buffer[STRING_BUFFER];
-        while (dataStream.getline(buffer, STRING_BUFFER, '\n')){
-            library::loadBook(lib, buffer);
+void library::loadLib(Library &lib, const char *libFile){
+    std::ifstream fstream;
+    fstream.open(libFile, std::ios::in);
+    if (fstream.is_open()){
+        std::string buffer;
+        while (std::getline(fstream, buffer)){
+            library::loadBook(lib.books[lib.bookCout], buffer);
+   //         library::loadKey(lib.books[lib.bookCout], lib.keys[lib.bookCout]);
+            lib.bookCout++;
         }
     } else {
         throw "Invalid File!!!";
     }
 }
 
-void library::updateKeyTable(Library &lib, keyTable &table){
+std::vector<std::string> library::split(const std::string &str){
+    std::vector<std::string> tokens;
+    std::string token;
+    std::istringstream tokenStream(str);
+    while (std::getline(tokenStream, token, ',')){
+        tokens.push_back(token);
+    }
+    return tokens;
 }
 
-void library::loop(library::Library &lib, library::keyTable &key){
+void library::loadBook(library::Book &book, const std::string &buffer){
+    std::vector<std::string> tokens = split(buffer);
+    char *ptr = book.bookName;
+    memset(ptr, 'a', STRING_BUFFER);
+    const char *token = tokens[0].c_str();
 }
-
