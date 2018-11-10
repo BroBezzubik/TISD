@@ -12,6 +12,7 @@ namespace library {
     enum TECH_TYPE{RUSSIAN, TRANSLATED};
     enum ART_TYPE{NOVEL, PLAY, POEM};
     enum CHILD_TYPE{CHILD_POEM, FAIRY_TAILS};
+    enum OPERATION{EXIT = 0, ADD, DELETE, OUT_PUT, SORT, COMPARE};
 
     struct TechBook;
     struct ChildBook;
@@ -23,9 +24,18 @@ namespace library {
 
     std::vector<std::string> split(const std::string &str);
     void loadBook(Book &book, const std::string &buffer);
-    void loadKey(const Book &book, Key &key);
+    void loadKey(Book &book, Key &key, int index);
     void loadLib(Library &lib, const char *libFile);
+    void addBook(Library &lib, const char *libFile);
+    void deleteBook(Library &lib, const char *libFile);
+    std::string getBookType(TECH_TYPE type);
+    std::string getBookType(ART_TYPE type);
+    std::string getBookType(CHILD_TYPE type);
+    void outPut(Book *books, int count);
+    void outPut(Key *keys, int count);
     void loop(Library &lib, const char *libFile);
+    OPERATION getOperation(void);
+    void selectOperation(OPERATION oper, Library &lib, const char *LibFil);
 }
 
 struct library::TechBook{
@@ -57,7 +67,7 @@ struct library::Book{
 };
 
 struct library::Key{
-    Book *book;
+    int index;
     int page;
 };
 
