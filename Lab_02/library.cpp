@@ -148,66 +148,79 @@ void library::outPut(Key *keys, int count){
         std::cout << "Pages: ";
         std::cout.width(10);
         std::cout << keys[index].page << std::endl;
-
     }
 
     std::cout << std::endl;
     std::cout << std::endl;
 }
 
+
+void library::outPutBook(Book &book, int index){
+    std::cout.width(3);
+    std::cout << index << ')';
+    std::cout.width(0);
+    std::cout << "Book Name: ";
+    std::cout.width(20);
+    std::cout << std::right << book.bookName << '|';
+    std::cout.width(0);
+    std::cout << "Author: ";
+    std::cout.width(20);
+    std::cout <<std::right << book.author << '|';
+    std::cout.width(0);
+    std::cout << "Publisher: ";
+    std::cout.width(20);
+    std::cout <<std::right << book.publisher << '|';
+    std::cout.width(0);
+    std::cout << "Pages: ";
+    std::cout.width(10);
+    std::cout <<std::right << book.pageCount << '|';
+
+    switch (book.bookType) {
+    case BOOK_TYPE::TECH:
+        std::cout.width(0);
+        std::cout << "Type: ";
+        std::cout.width(10);
+        std::cout << getBookType(book.type.tech.bookType) << '|';
+        std::cout.width(0);
+        std::cout << "Year: ";
+        std::cout.width(10);
+        std::cout << book.type.tech.year << '|';
+        break;
+    case BOOK_TYPE::ART:
+        std::cout.width(0);
+        std::cout << "Type: ";
+        std::cout.width(10);
+        std::cout << getBookType(book.type.art.bookType) << '|';
+        break;
+    case BOOK_TYPE::CHILD:
+        std::cout.width(0);
+        std::cout << "Type: ";
+        std::cout.width(10);
+        std::cout << getBookType(book.type.child.bookType) << '|';
+        break;
+    default:
+        break;
+    }
+
+    std::cout << std::endl;
+
+}
+
 void library::outPut(Book *books, int count){
     std::cout << "### TABLE OF BOOKS!!! ###" << std::endl;
     for (int index = 0; index < count; index++){
-        std::cout.width(3);
-        std::cout << index << ')';
-        std::cout.width(0);
-        std::cout << "Book Name: ";
-        std::cout.width(20);
-        std::cout << std::right << books[index].bookName << '|';
-        std::cout.width(0);
-        std::cout << "Author: ";
-        std::cout.width(20);
-        std::cout <<std::right << books[index].author << '|';
-        std::cout.width(0);
-        std::cout << "Publisher: ";
-        std::cout.width(20);
-        std::cout <<std::right << books[index].publisher << '|';
-        std::cout.width(0);
-        std::cout << "Pages: ";
-        std::cout.width(10);
-        std::cout <<std::right << books[index].pageCount << '|';
-
-        switch (books[index].bookType) {
-        case BOOK_TYPE::TECH:
-            std::cout.width(0);
-            std::cout << "Type: ";
-            std::cout.width(10);
-            std::cout << getBookType(books[index].type.tech.bookType) << '|';
-            std::cout.width(0);
-            std::cout << "Year: ";
-            std::cout.width(10);
-            std::cout << books[index].type.tech.year << '|';
-            break;
-        case BOOK_TYPE::ART:
-            std::cout.width(0);
-            std::cout << "Type: ";
-            std::cout.width(10);
-            std::cout << getBookType(books[index].type.art.bookType) << '|';
-            break;
-        case BOOK_TYPE::CHILD:
-            std::cout.width(0);
-            std::cout << "Type: ";
-            std::cout.width(10);
-            std::cout << getBookType(books[index].type.child.bookType) << '|';
-            break;
-        default:
-            break;
-        }
-
-        std::cout << std::endl;
+        library::outPutBook(books[index], index);
     }
     std::cout << std::endl;
     std::cout << std::endl;
+}
+
+void library::outKeyToBook(Library lib){
+    std::cout << "### TABLE OF BOOKS BY KEYS!!! ###" << std::endl;
+    for (int index = 0; index < lib.bookCout; index++){
+        int BookIndex = lib.keys[index].index;
+        outPutBook(lib.books[BookIndex], index);
+    }
 }
 
 void library::selectOperation(OPERATION oper, Library &lib, const char *LibFile){
@@ -222,8 +235,12 @@ void library::selectOperation(OPERATION oper, Library &lib, const char *LibFile)
     case OPERATION::OUT_PUT:
         library::outPut(lib.books, lib.bookCout);
         library::outPut(lib.keys, lib.bookCout);
+        library::outKeyToBook(lib);
         break;
     case OPERATION::SORT:
+        break;
+    case OPERATION::SEARCH:
+        //library::search(lib);
         break;
     default:
         break;
