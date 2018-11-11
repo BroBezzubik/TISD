@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#define STRING_BUFFER_UINPUT 50
 #define STRING_BUFFER 30
 #define LIBRARY_MAX_SIZE 100
 

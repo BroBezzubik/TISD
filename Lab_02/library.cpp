@@ -66,6 +66,95 @@ void library::loadBook(library::Book &book, const std::string &buffer){
     }
 }
 
+
+void library::addBook(Library &lib, const char *libFile){
+    try{
+        char bookName[STRING_BUFFER_UINPUT];
+        std::cout << "Book name: ";
+        std::cin >> bookName;
+        if (strlen(bookName) > STRING_BUFFER){ throw "Name is to big!";}
+
+
+        char autor[STRING_BUFFER_UINPUT];
+        std::cout << "Author: ";
+        std::cin >> autor;
+        if (strlen(autor) > STRING_BUFFER){ throw "Author name is to big!";}
+
+        char publisher[STRING_BUFFER_UINPUT];
+        std::cout << "Publisher: ";
+        std::cin >> publisher;
+        if (strlen(publisher) > STRING_BUFFER){ throw "Publisher is to long!";}
+
+        int pages = 0;
+        std::cout << "Pages: ";
+        std::cin >> pages;
+        if (pages > 99999 && pages < 0){ throw "Wrong page count!";}
+
+        int type = 0;
+        std::cout << "0)Tech" << std::endl;
+        std::cout << "1)Art" << std::endl;
+        std::cout << "2)Child" << std::endl;
+        std::cout << "Type: " << std::endl;
+        std::cin >> type;
+
+        library::Book *book = &lib.books[lib.bookCout];
+        switch (type) {
+        case BOOK_TYPE::TECH:
+            std::cout << "You selected Tech type!" << std::endl;
+
+            int year;
+            std::cout << "Input year: ";
+            std::cin >> year;
+            if (year < 0 && year > 2020){ throw "Invalid year!";}
+
+            int tech_type;
+            std::cout << "0)Russian" << std::endl;
+            std::cout << "1)Translated" << std::endl;
+            std::cout << "Input book type: ";
+            std::cin >> tech_type;
+            if (type != TECH_TYPE::RUSSIAN && type != TECH_TYPE::TRANSLATED){
+                throw "Invlid tech type!";
+            }
+
+            book->type.tech.bookType = (TECH_TYPE) tech_type;
+            book->type.tech.year = year;
+
+            break;
+        case BOOK_TYPE::ART:
+            std::cout << "You selected Art type: ";
+
+            int artType;
+            std::cout << "0)Novel" << std::endl;
+            std::cout << "1)Play" << std::endl;
+            std::cout << "2)Poem" << std::endl;
+            std::cout << "Input book type: ";
+            std::cin >> artType;
+            if (artType != ART_TYPE::NOVEL && artType != ART_TYPE::PLAY && artType != ART_TYPE::POEM){
+                throw "Invalid type!";
+            }
+
+            book->type.art.bookType = (ART_TYPE) artType;
+            break;
+        case BOOK_TYPE::CHILD:
+            //todo Довавить доволнение детской книги
+            break;
+        default:
+            throw "Invalid book type!";
+            break;
+        }
+
+        strcpy(book->author, autor);
+        strcpy(book->bookName, bookName);
+        strcpy(book->publisher, publisher);
+        book->pageCount = pages;
+        book->bookType = (BOOK_TYPE) type;
+        library::loadKey(*book, lib.keys[lib.bookCout], lib.bookCout);
+        lib.bookCout++;
+    } catch (const char *msg){
+        std::cerr << msg << std::endl;
+    }
+}
+
 library::OPERATION library::getOperation(){
     for(;;){
         std::cout << "Select Operation:" << std::endl;
@@ -154,7 +243,6 @@ void library::outPut(Key *keys, int count){
     std::cout << std::endl;
 }
 
-
 void library::outPutBook(Book &book, int index){
     std::cout.width(3);
     std::cout << index << ')';
@@ -229,6 +317,7 @@ void library::selectOperation(OPERATION oper, Library &lib, const char *LibFile)
         std::exit(0);
         break;
     case OPERATION::ADD:
+        library::addBook(lib, LibFile);
         break;
     case OPERATION::DELETE:
         break;
