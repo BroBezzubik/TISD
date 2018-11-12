@@ -28,6 +28,7 @@ namespace library {
     void loadKey(Book &book, Key &key, int index);
     void loadLib(Library &lib, const char *libFile);
     void addBook(Library &lib, const char *libFile);
+    void uploadBook(Book *book, const char *libFile);
     void deleteBook(Library &lib, const char *libFile);
     void search(Library &lib);
     std::string getBookType(TECH_TYPE type);

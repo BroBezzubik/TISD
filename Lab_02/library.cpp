@@ -68,21 +68,22 @@ void library::loadBook(library::Book &book, const std::string &buffer){
 
 
 void library::addBook(Library &lib, const char *libFile){
+    std::cin.ignore();
     try{
         char bookName[STRING_BUFFER_UINPUT];
         std::cout << "Book name: ";
-        std::cin >> bookName;
+        std::cin.getline(bookName, STRING_BUFFER_UINPUT, '\n');
         if (strlen(bookName) > STRING_BUFFER){ throw "Name is to big!";}
 
 
         char autor[STRING_BUFFER_UINPUT];
         std::cout << "Author: ";
-        std::cin >> autor;
+        std::cin.getline(autor, STRING_BUFFER_UINPUT, '\n');
         if (strlen(autor) > STRING_BUFFER){ throw "Author name is to big!";}
 
         char publisher[STRING_BUFFER_UINPUT];
         std::cout << "Publisher: ";
-        std::cin >> publisher;
+        std::cin.getline(publisher, STRING_BUFFER_UINPUT, '\n');
         if (strlen(publisher) > STRING_BUFFER){ throw "Publisher is to long!";}
 
         int pages = 0;
@@ -136,6 +137,14 @@ void library::addBook(Library &lib, const char *libFile){
             book->type.art.bookType = (ART_TYPE) artType;
             break;
         case BOOK_TYPE::CHILD:
+            int childType;
+            std::cout << "0 Child poems" << std::endl;
+            std::cout << "1 Fairy tails" << std::endl;
+            std::cout << "Input child book type: ";
+            std::cin >> childType;
+            if (childType != CHILD_TYPE::CHILD_POEM && childType != CHILD_TYPE::FAIRY_TAILS){
+                throw "Invalid type!";
+            }
             //todo Довавить доволнение детской книги
             break;
         default:
@@ -150,8 +159,37 @@ void library::addBook(Library &lib, const char *libFile){
         book->bookType = (BOOK_TYPE) type;
         library::loadKey(*book, lib.keys[lib.bookCout], lib.bookCout);
         lib.bookCout++;
+
+        uploadBook(book, libFile);
     } catch (const char *msg){
         std::cerr << msg << std::endl;
+    }
+}
+
+void library::uploadBook(Book *book, const char *libFile){
+    std::fstream lib;
+    lib.open(libFile, std::ios::app);
+    if (lib.is_open()){
+        lib << book->bookName << ',' << book->author << ',' << book->publisher << ',';
+        lib << book->pageCount << ',' << book->bookType << ',';
+
+        switch (book->bookType) {
+        case library::BOOK_TYPE::TECH:
+            lib << book->type.tech.bookType << ',';
+            lib << book->type.tech.year;
+            break;
+        case library::BOOK_TYPE::ART:
+            lib << book->type.art.bookType;
+            break;
+        case library::BOOK_TYPE::CHILD:
+            lib << book->type.child.bookType;
+            break;
+        default:
+            break;
+        }
+        lib << '\n';
+    } else {
+        throw "Can't open file!";
     }
 }
 
