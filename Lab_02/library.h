@@ -13,7 +13,7 @@ namespace library {
     enum TECH_TYPE{RUSSIAN, TRANSLATED};
     enum ART_TYPE{NOVEL, PLAY, POEM};
     enum CHILD_TYPE{CHILD_POEM, FAIRY_TAILS};
-    enum OPERATION{EXIT = 0, ADD, DELETE, OUT_PUT, SORT, COMPARE, SEARCH};
+    enum OPERATION{EXIT = 0, ADD, DELETE, OUT_PUT, SORT, SEARCH};
 
     struct TechBook;
     struct ChildBook;
@@ -41,6 +41,7 @@ namespace library {
     void loop(Library &lib, const char *libFile);
     OPERATION getOperation(void);
     void selectOperation(OPERATION oper, Library &lib, const char *LibFil);
+    int cmp(const void *tmp1, const void *tmp2);
 }
 
 struct library::TechBook{
