@@ -3,10 +3,11 @@
 
 #include <string>
 #include <vector>
+#include <ctime>
 
 #define STRING_BUFFER_UINPUT 50
 #define STRING_BUFFER 30
-#define LIBRARY_MAX_SIZE 100
+#define LIBRARY_MAX_SIZE 1000
 
 namespace library {
     enum BOOK_TYPE{TECH = 0, ART, CHILD};
@@ -41,7 +42,11 @@ namespace library {
     void loop(Library &lib, const char *libFile);
     OPERATION getOperation(void);
     void selectOperation(OPERATION oper, Library &lib, const char *LibFil);
-    int cmp(const void *tmp1, const void *tmp2);
+    int cmpBooks(const void *tmp1, const void *tmp2);
+    int cmpKeys(const void *tmp1, const void *tmp2);
+    void sort(Library &lib, const char *fileName);
+    void bubbleSort(Book *books, int count);
+    void bubbleSort(Key *keys, int count);
 }
 
 struct library::TechBook{
