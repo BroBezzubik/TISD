@@ -183,17 +183,17 @@ void library::deleteBook(Library &lib, const char *libFile){
             for(int index = bookIndex; index < lib.bookCout - 1; index++){
                 lib.books[index] = lib.books[index + 1];
             }
-            // delete element from main table
+            // delete element from key table
             int foundElement = 0;
-            for (int index = bookIndex; index < lib.bookCout - 1; index++){
+            for (int index = 0; index < lib.bookCout - 1; index++){
                 if (lib.keys[index].index == bookIndex){
                     foundElement = 1;
                 }
-                if (foundElement){
+                if (foundElement == 1){
                     lib.keys[index] = lib.keys[index + 1];
                 }
             }
-            lib.bookCout--;
+            lib.bookCout = lib.bookCout - 1;
             libStream.close();
             for (int index = 0; index < lib.bookCout; index++){
                 library::uploadBook(&lib.books[index], libFile);
@@ -522,6 +522,7 @@ void library::outKeyToBook(Library lib){
     for (int index = 0; index < lib.bookCout; index++){
         int BookIndex = lib.keys[index].index;
         outPutBook(lib.books[BookIndex], index);
+        std::cout << BookIndex << std::endl;
     }
 }
 
@@ -540,7 +541,7 @@ void library::selectOperation(OPERATION oper, Library &lib, const char *LibFile)
     case OPERATION::OUT_PUT:
         library::outPut(lib.books, lib.bookCout);
         library::outPut(lib.keys, lib.bookCout);
-        library::outKeyToBook(lib);
+        //library::outKeyToBook(lib);
         break;
     case OPERATION::SORT:
         library::sort(lib, LibFile);

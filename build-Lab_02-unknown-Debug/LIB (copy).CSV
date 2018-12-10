@@ -1,6 +1,6 @@
 Stalker,Glushkov,Moscow,523,1,0
 Disc Math,Belousov,Moskov herald,822,0,0,2015
-Book Name,Author,Publisher,0,0,0,0
+Book Name,Author,Publisher,pageCount,Type,BookType,year
 vel enim,Barr,Deverose,531,0,0,1331
 vel nisl,Salomon,Bryden,724,0,0,807
 ullamcorper,Garreth,Dulson,532,0,0,1717
@@ -9,7 +9,7 @@ nulla suscipit,Cyndy,Calkin,984,0,0,1666
 enim,Ulberto,Labroue,645,0,0,890
 quisque arcu,Joelle,Bon,983,0,0,1152
 quam nec,Cesar,Grishanin,295,0,0,375
-Book Name,Author,Publisher,0,0,0,0
+Book Name,Author,Publisher,pageCount,Type,BookType,year
 dapibus,Merrielle,Candish,535,0,1,579
 duis,Sig,Alenov,636,0,1,1436
 mi,Fionna,Beardshall,893,0,1,1726
@@ -42,7 +42,7 @@ mauris sit,Ilise,Durker,41,0,0,1203
 ac,Isa,Cullin,207,0,0,1457
 ultrices,Trescha,Dashwood,961,0,0,1921
 suspendisse potenti,Orton,Goundsy,673,0,0,1736
-Book Name,Author,Publisher,0,0,0,1736
+Book Name,Author,Publisher,pageCount,Type,BookType
 est,Emerson,Annand,413,1,1
 aliquet massa,Yasmeen,Skellion,424,1,0
 pharetra magna,Damita,Cursons,276,1,2
@@ -265,10 +265,11 @@ luctus,Joella,Stevings,233,1,0
 nulla,Auria,Oswald,520,1,2
 pede,Matthaeus,Child,992,1,2
 proin leo,Hamlin,Seel,480,1,2
+interdum mauris,Reagan,Beagles,63,1,1
 ante ipsum,Barret,Hanretty,454,1,0
 ligula,Gloriane,De Giorgi,863,1,0
 dis parturient,Everard,Stockton,476,1,2
 nulla elit,Angus,Salmon,228,1,2
 cum sociis,Alma,Mordie,173,1,0
 viverra dapibus,Cherry,Prati,942,1,1
-Gipireon,Simons,23,5000,1,0
+amet consectetuer,Layton,Childes,596,1,0
