@@ -1,47 +1,67 @@
 #ifndef QUEUE_H
 #define QUEUE_H
 
-#define QUEUE_MAX_SIZE 100
+#include <iostream>
+#include <cstdlib>
+#include <limits>
+
+#define QUEUE_SIZE 5
+
+extern int countType1, countType2;
+extern double arriveTime1, arriveTime2, arriveTime3, arriveTime4;
+extern double processTime1, processTime2, processTime3, processTime4;
+extern double GLOBAL_PROCCES_TIME, GLOBAL_ARRIVE_TIME_TYPE1, GLOBAL_ARRIVE_TIME_TYPE2;
 
 namespace queue {
-    template <typename T>
     struct Queue;
-
-    template <typename T>
-    struct Dynamic_queue;
-
-    template <typename T>
+    struct DynamicQueue;
     struct Node;
-
     struct Request;
+
+    void intro();
+    void infTimeRange();
+    void changeTimeRange();
+    void checkStream(std::basic_istream<char> &str);
+    void simulation();
+    void addElements(Queue &queue, Queue &queue2);
+    Request generateElement(double arTime1, double arTime2,
+                            double procTime1, double procTime2);
+    Node* generateDynamElement(double arrTime1, double arrTime2,
+                              double procTime1, double procTime2);
+    void addElements(DynamicQueue &queue, DynamicQueue &queue2);
+    void addElement(Queue &queue, Request req);
+    void addElement(DynamicQueue &queue, Node &req);
+    void process(Queue &queue1, Queue &queue2);
+    void process(DynamicQueue &queue1, DynamicQueue &queue2);
 }
 
-template <typename T>
-struct queue::Queue{
-    long int count = 0;
-    T elements[QUEUE_MAX_SIZE];
-    T *pin;
-    T *pout;
-    T *fElement;
-    T *lastElement;
-};
-
 struct queue::Request{
-    double incomeTime;
-    double processTime;
+    Request();
+    double tArrive;
+    double tProcess;
 };
 
-template <typename T>
+struct queue::Queue{
+    Queue();
+    Request requests[QUEUE_SIZE];
+    int count;
+    Request *pIn;
+    Request *pOut;
+    Request *begin;
+    Request *end;
+};
+
+struct queue::DynamicQueue{
+    DynamicQueue();
+    Node *pIn;
+    Node *pOut;
+    int count;
+};
+
 struct queue::Node{
-    T element;
+    Node();
+    Request item;
     Node *next;
-};
-
-template <typename T>
-struct queue::Dynamic_queue{
-    long int count;
-    queue::Node<T> *pout;
-    queue::Node<T> *pin;
 };
 
 #endif // QUEUE_H
