@@ -5,18 +5,17 @@
 #include <cstdlib>
 #include <limits>
 
-#define QUEUE_SIZE 5
+#define QUEUE_SIZE 100
 
-extern int countType1, countType2;
 extern double arriveTime1, arriveTime2, arriveTime3, arriveTime4;
 extern double processTime1, processTime2, processTime3, processTime4;
-extern double GLOBAL_PROCCES_TIME, GLOBAL_ARRIVE_TIME_TYPE1, GLOBAL_ARRIVE_TIME_TYPE2;
 
 namespace queue {
     struct Queue;
     struct DynamicQueue;
     struct Node;
     struct Request;
+    struct time;
 
     void intro();
     void infTimeRange();
@@ -29,11 +28,23 @@ namespace queue {
     Node* generateDynamElement(double arrTime1, double arrTime2,
                               double procTime1, double procTime2);
     void addElements(DynamicQueue &queue, DynamicQueue &queue2);
-    void addElement(Queue &queue, Request req);
-    void addElement(DynamicQueue &queue, Node &req);
-    void process(Queue &queue1, Queue &queue2);
-    void process(DynamicQueue &queue1, DynamicQueue &queue2);
+    int addElement(Queue &queue, Request req);
+    int addElement(DynamicQueue &queue, Node &req);
+    void process(Queue &queue1, Queue &queue2, time &tm);
+    void updateQueueDisk(Queue &que);
+    void process(DynamicQueue &queue1, DynamicQueue &queue2, time &tm);
+    void simulationInfo(Queue &queue1, Queue &queue2, time &tm);
+    void simulationResult(Queue &queue1, Queue &queue2, time &tm);
 }
+
+struct queue::time{
+    time();
+    int simulationInfoCount;
+    double GLOBAL_ARRIVE_TIME_TYPE1;
+    double GLOBAL_ARRIVE_TIME_TYPE2;
+    double GLOBAL_DEPARTURE_TIME;
+    double GLOBAL_TIME;
+};
 
 struct queue::Request{
     Request();
@@ -44,6 +55,8 @@ struct queue::Request{
 struct queue::Queue{
     Queue();
     Request requests[QUEUE_SIZE];
+    int loggedItems;
+    int releasedItems;
     int count;
     Request *pIn;
     Request *pOut;
@@ -53,6 +66,8 @@ struct queue::Queue{
 
 struct queue::DynamicQueue{
     DynamicQueue();
+    int loggedItems;
+    int releasedItems;
     Node *pIn;
     Node *pOut;
     int count;
