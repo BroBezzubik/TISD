@@ -39,6 +39,8 @@ namespace queue {
 
 struct queue::time{
     time();
+    int sumLengQueue1;
+    int sumLengQueue2;
     int simulationInfoCount;
     double GLOBAL_ARRIVE_TIME_TYPE1;
     double GLOBAL_ARRIVE_TIME_TYPE2;
