@@ -6,12 +6,12 @@
 #include <chrono>
 
 queue::time::time(){
-    simulationInfoCount = 1;
     sumLengQueue1 = 0;
     sumLengQueue2 = 0;
-    GLOBAL_ARRIVE_TIME_TYPE1 = 0;
-    GLOBAL_ARRIVE_TIME_TYPE2 = 0;
-    GLOBAL_DEPARTURE_TIME = 0;
+    ARRIVE_TIME_TYPE1 = 0;
+    ARRIVE_TIME_TYPE2 = 0;
+    PROCESS_TIME = 0;
+    DEPARTURE_TIME = 0;
     GLOBAL_TIME = 0;
 }
 
@@ -186,20 +186,16 @@ void queue::addElements(Queue &queue, Queue &queue2){
 //    std::uniform_int_distribution<int> distribution(1, 5);
 //    int elementsCount = distribution(engine);
     for (int i = 0; i < 1; i++){
-        int type = rand() % 2;
+        int type = rand() % 100;
         Request req;
-        if (type == 0){
+        if (type % 2 == 0){
             req = generateElement(arriveTime1, arriveTime2,
                                   processTime1, processTime2);
-            if (addElement(queue, req)){
-                queue.loggedItems++;
-            }
-        } else if (type == 1){
+            addElement(queue, req);
+        } else {
             req = generateElement(arriveTime3, arriveTime4,
                                   processTime3, processTime4);
-            if (addElement(queue2, req)){
-                queue2.loggedItems++;
-            }
+            addElement(queue2, req);
         }
     }
 }
@@ -250,126 +246,194 @@ void queue::updateQueueDisk(Queue &que){
 
 void queue::process(Queue &queue1, Queue &queue2, time &tm){
     if (queue1.count != 0 && queue2.count != 0){
-        double arrTime1 = tm.GLOBAL_ARRIVE_TIME_TYPE1 + queue1.pOut->tArrive;
-        double arrTime2 = tm.GLOBAL_ARRIVE_TIME_TYPE2 + queue2.pOut->tArrive;
+        double arrTime1 = tm.ARRIVE_TIME_TYPE1 + queue1.pOut->tArrive;
+        double arrTime2 = tm.ARRIVE_TIME_TYPE2 + queue2.pOut->tArrive;
 
-        if (tm.GLOBAL_DEPARTURE_TIME >= arrTime1){
-            tm.GLOBAL_DEPARTURE_TIME += queue1.pOut->tProcess;
-            tm.GLOBAL_ARRIVE_TIME_TYPE1 += queue1.pOut->tArrive;
-            queue::updateQueueDisk(queue1);
+        if (tm.DEPARTURE_TIME >= arrTime1){
+            tm.DEPARTURE_TIME += queue1.pOut->tProcess;
+            tm.ARRIVE_TIME_TYPE1 += queue1.pOut->tArrive;
+            tm.PROCESS_TIME += queue1.pOut->tProcess;
             tm.sumLengQueue1 += queue1.count;
+            queue::updateQueueDisk(queue1);
 
-        } else if (tm.GLOBAL_DEPARTURE_TIME >= arrTime2){
-            tm.GLOBAL_DEPARTURE_TIME += queue2.pOut->tProcess;
-            tm.GLOBAL_ARRIVE_TIME_TYPE2 += queue2.pOut->tArrive;
-            queue::updateQueueDisk(queue2);
+        } else if (tm.DEPARTURE_TIME >= arrTime2){
+            tm.DEPARTURE_TIME += queue2.pOut->tProcess;
+            tm.ARRIVE_TIME_TYPE2 += queue2.pOut->tArrive;
+            tm.PROCESS_TIME += queue2.pOut->tProcess;
             tm.sumLengQueue2 += queue2.count;
+            queue::updateQueueDisk(queue2);
 
         } else if (arrTime1 < arrTime2){
-            tm.GLOBAL_DEPARTURE_TIME = arrTime1 + queue1.pOut->tProcess;
-            tm.GLOBAL_ARRIVE_TIME_TYPE1 += queue1.pOut->tArrive;
-            queue::updateQueueDisk(queue1);
-            tm.sumLengQueue1 += queue1.count;
+            tm.DEPARTURE_TIME = arrTime1;
 
         } else {
-            tm.GLOBAL_DEPARTURE_TIME = arrTime2 + queue2.pOut->tProcess;
-            tm.GLOBAL_ARRIVE_TIME_TYPE2 += queue2.pOut->tArrive;
-            queue::updateQueueDisk(queue2);
-            tm.sumLengQueue2 += queue2.count;
+            tm.DEPARTURE_TIME = arrTime2;
         }
+
     } else if (queue1.count != 0 && queue2.count == 0){
-        double arrTime = tm.GLOBAL_ARRIVE_TIME_TYPE1 + queue1.pOut->tArrive;
+        double arrTime = tm.ARRIVE_TIME_TYPE1 + queue1.pOut->tArrive;
 
-        if (tm.GLOBAL_DEPARTURE_TIME < arrTime){
-            tm.GLOBAL_DEPARTURE_TIME = arrTime + queue1.pOut->tProcess;
-            tm.GLOBAL_ARRIVE_TIME_TYPE1 += queue1.pOut->tArrive;
+        if (tm.DEPARTURE_TIME >= arrTime){
+            tm.DEPARTURE_TIME = arrTime + queue1.pOut->tProcess;
+            tm.ARRIVE_TIME_TYPE1 += queue1.pOut->tArrive;
+            tm.PROCESS_TIME += queue1.pOut->tProcess;
+            tm.sumLengQueue1 += queue1.count;
             queue::updateQueueDisk(queue1);
 
-        } else if (tm.GLOBAL_DEPARTURE_TIME >= arrTime){
-            tm.GLOBAL_DEPARTURE_TIME += queue1.pOut->tProcess;
-            tm.GLOBAL_ARRIVE_TIME_TYPE1 += queue1.pOut->tArrive;
-            queue::updateQueueDisk(queue1);
+        } else if (tm.DEPARTURE_TIME < arrTime){
+            tm.DEPARTURE_TIME = arrTime;
         }
-        tm.sumLengQueue1 += queue1.count;
 
     } else if (queue1.count == 0 && queue2.count != 0){
-        double arrTime = tm.GLOBAL_ARRIVE_TIME_TYPE2 + queue2.pOut->tArrive;
+        double arrTime = tm.ARRIVE_TIME_TYPE2 + queue2.pOut->tArrive;
 
-        if (tm.GLOBAL_DEPARTURE_TIME < arrTime){
-            tm.GLOBAL_DEPARTURE_TIME = arrTime + queue1.pOut->tProcess;
-            tm.GLOBAL_ARRIVE_TIME_TYPE2 += queue2.pOut->tArrive;
+        if (tm.DEPARTURE_TIME >= arrTime){
+            tm.DEPARTURE_TIME = arrTime + queue1.pOut->tProcess;
+            tm.ARRIVE_TIME_TYPE2 += queue2.pOut->tArrive;
+            tm.PROCESS_TIME += queue2.pOut->tArrive;
+            tm.sumLengQueue2 += queue2.count;
             queue::updateQueueDisk(queue2);
 
-        } else if (tm.GLOBAL_DEPARTURE_TIME >= arrTime){
-            tm.GLOBAL_DEPARTURE_TIME += queue2.pOut->tProcess;
-            tm.GLOBAL_ARRIVE_TIME_TYPE2 += queue2.pOut->tArrive;
-            queue::updateQueueDisk(queue2);
+        } else if (tm.DEPARTURE_TIME < arrTime){
+            tm.DEPARTURE_TIME = arrTime;
         }
-        tm.sumLengQueue2 += queue2.count;
     }
 }
 
+void queue::updateQueueDisk(DynamicQueue &que){
+    que.count--;
+    que.releasedItems++;
+    Node *tmp = que.pOut;
+    que.pOut = que.pOut->next;
+    delete tmp;
+}
 
 void queue::process(DynamicQueue &queue1, DynamicQueue &queue2, time &tm){
+    if (queue1.count != 0 && queue2.count != 0){
+        double arrTime1 = tm.ARRIVE_TIME_TYPE1 + queue1.pOut->item.tArrive;
+        double arrTime2 = tm.ARRIVE_TIME_TYPE2 + queue2.pOut->item.tArrive;
 
+        if (tm.DEPARTURE_TIME >= arrTime1){
+            tm.DEPARTURE_TIME += queue1.pOut->item.tArrive;
+            tm.ARRIVE_TIME_TYPE1 += queue1.pOut->item.tArrive;
+            tm.sumLengQueue1 += queue1.count;
+            queue::updateQueueDisk(queue1);
+
+        } else if (tm.DEPARTURE_TIME >= arrTime2){
+            tm.DEPARTURE_TIME += queue2.pOut->item.tArrive;
+            tm.ARRIVE_TIME_TYPE2 += queue2.pOut->item.tArrive;
+            tm.sumLengQueue2 += queue2.count;
+            queue::updateQueueDisk(queue2);
+
+        } else if (arrTime1 < arrTime2){
+            tm.DEPARTURE_TIME = arrTime1;
+
+        } else {
+            tm.DEPARTURE_TIME = arrTime2;
+        }
+    } else if (queue1.count != 0 && queue2.count == 0){
+        double arrTime = tm.ARRIVE_TIME_TYPE1 + queue1.pOut->item.tArrive;
+
+        if (tm.DEPARTURE_TIME > arrTime){
+            tm.DEPARTURE_TIME += queue1.pOut->item.tArrive;
+            tm.ARRIVE_TIME_TYPE1 += queue1.pOut->item.tArrive;
+            tm.sumLengQueue1 += queue1.count;
+            queue::updateQueueDisk(queue1);
+
+        } else {
+            tm.DEPARTURE_TIME = arrTime;
+        }
+
+    } else if (queue1.count == 0 && queue2.count != 0){
+        double arrTime = tm.ARRIVE_TIME_TYPE2 + queue2.pOut->item.tArrive;
+
+        if (tm.DEPARTURE_TIME > arrTime){
+            tm.DEPARTURE_TIME += queue2.pOut->item.tArrive;
+            tm.ARRIVE_TIME_TYPE2 += queue2.pOut->item.tArrive;
+            tm.sumLengQueue2 += queue2.count;
+            queue::updateQueueDisk(queue2);
+        } else {
+            tm.DEPARTURE_TIME = arrTime;
+        }
+    }
 }
 
 void queue::simulationInfo(Queue &queue1, Queue &queue2, time &tm){
     std::cout << "### Simulation info ###" << std::endl;
     std::cout << std::endl;
-    std::cout << "## 1st type of request ##" << std::endl;
     std::cout << "Current lengh of type1: " << queue1.count << std::endl;
     std::cout << "Current lengh of type2: " << queue2.count << std::endl;
-    std::cout << "Middle time to arrive type1: " << tm.GLOBAL_ARRIVE_TIME_TYPE1 / queue1.releasedItems << std::endl;
-    std::cout << "Middle time to arrive type2: " << tm.GLOBAL_ARRIVE_TIME_TYPE2 / queue2.releasedItems << std::endl;
+    std::cout << "Middle time to arrive type1: " << tm.ARRIVE_TIME_TYPE1 / queue1.releasedItems << std::endl;
+    std::cout << "Middle time to arrive type2: " << tm.ARRIVE_TIME_TYPE2 / queue2.releasedItems << std::endl;
     std::cout << "Middle count element in queue type1: " << (double) (tm.sumLengQueue1 / queue1.releasedItems) << std::endl;
     std::cout << "Middle count element in queue type2: " << (double) (tm.sumLengQueue2 / queue2.releasedItems) << std::endl;
+    std::cout << "Count of Login 1st type elements: " << queue1.loggedItems << std::endl;
+    std::cout << "Count of login 2nd type elements: " << queue2.loggedItems << std::endl;
+    std::cout << "Count of departed elements 1st type: " << queue1.releasedItems << std::endl;
+    std::cout << "Count of departed elements 2nd type: " << queue2.releasedItems << std::endl;
     std::cout << std::endl;
-    tm.simulationInfoCount++;
 }
 
 void queue::simulationResult(Queue &queue1, Queue &queue2, time &tm){
-    double midTimeArrive1 = (arriveTime1 + arriveTime2) / 2;
-    double midTimeArrive2 = (arriveTime3 + arriveTime4) / 2;
-
     std::cout << " ### !!!SIMULATION INFO!!! ### " << std::endl;
-    std::cout << "Middle time to arrive 1st type: " << midTimeArrive1 << std::endl;
-    std::cout << "Middle time to arrive 2nd type: " << midTimeArrive2 << std::endl;
+    std::cout << "@@@ 1st type of request @@@" << std::endl;
     std::cout << "Count of 1st type log in: " << queue1.loggedItems << std::endl;
     std::cout << "Count of 1st type relesed: " << queue1.releasedItems << std::endl;
+    std::cout << std::endl;
+    std::cout << "@@@ 2nd type of reques @@@" << std::endl;
     std::cout << "Count of 2nd type log in: " << queue2.loggedItems << std::endl;
     std::cout << "Count of 2nd type relesed: " << queue2.releasedItems << std::endl;
+
+    double workTime;
+    if (tm.ARRIVE_TIME_TYPE1 / queue1.releasedItems + tm.ARRIVE_TIME_TYPE2 / queue2.releasedItems > (processTime1 + processTime2) / 2 + (processTime3 + processTime4) / 2 ){
+        workTime = tm.DEPARTURE_TIME;
+    } else {
+        workTime = tm.PROCESS_TIME;
+    }
+
+    std::cout << std::endl;
+    std::cout << "Time of work is: " << workTime << std::endl;
+
+    std::cout << "Expected time of work with 1st type: " <<
+
 }
 
 void queue::simulation(){
     queue::Queue queue1;
     queue::Queue queue2;
     time tm;
+    int roof = 100;
     for(int index = 0;;index++){
         process(queue1, queue2, tm);
         addElements(queue1, queue2);
-        if (queue1.releasedItems % 100 == 0 && index != 0 && index != 1){
+
+        if (queue1.releasedItems == roof){
             simulationInfo(queue1, queue2, tm);
+            roof += 100;
         }
 
         if (queue1.releasedItems >= 1000){
             break;
         }
     }
-
+    std::cout << tm.PROCESS_TIME << std::endl;
+    std::cout << tm.DEPARTURE_TIME << std::endl;
     queue::simulationResult(queue1, queue2, tm);
 
+    time tm1;
     DynamicQueue queue3;
     DynamicQueue queue4;
-    //    for(;;){
-//        addElements(queue2);
-//        process(queue2);
-//
-//        if (countType1 % 100 == 0){
-//
-//        }
-//        if (countType1 >= 1000){
-//            break;
-//        }
-//    }
+    roof = 100;
+    for(int index = 0; ; index++){
+        addElements(queue3, queue4);
+        process(queue3, queue4, tm1);
+
+        if (index == roof){
+            //simulationInfo(queue3, queue4);
+            roof += 100;
+        }
+        if (queue3.releasedItems >= 1000){
+            break;
+        }
+    }
 }

@@ -32,19 +32,22 @@ namespace queue {
     int addElement(DynamicQueue &queue, Node &req);
     void process(Queue &queue1, Queue &queue2, time &tm);
     void updateQueueDisk(Queue &que);
+    void updateQueueDisk(DynamicQueue &que);
     void process(DynamicQueue &queue1, DynamicQueue &queue2, time &tm);
     void simulationInfo(Queue &queue1, Queue &queue2, time &tm);
+    void simulationInfo(DynamicQueue &queue1, DynamicQueue &queue2);
     void simulationResult(Queue &queue1, Queue &queue2, time &tm);
+    void simulationREsult(DynamicQueue &queue1, DynamicQueue &queue2);
 }
 
 struct queue::time{
     time();
     int sumLengQueue1;
     int sumLengQueue2;
-    int simulationInfoCount;
-    double GLOBAL_ARRIVE_TIME_TYPE1;
-    double GLOBAL_ARRIVE_TIME_TYPE2;
-    double GLOBAL_DEPARTURE_TIME;
+    double ARRIVE_TIME_TYPE1;
+    double ARRIVE_TIME_TYPE2;
+    double DEPARTURE_TIME;
+    double PROCESS_TIME;
     double GLOBAL_TIME;
 };
 
