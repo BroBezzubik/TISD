@@ -3,85 +3,80 @@
 
 #include <iostream>
 #include <cstdlib>
-#include <limits>
 
-#define QUEUE_SIZE 100
+#define QUEUE_MAX_SIZE 1000
+#define PROCESS_LIMIT 1000
 
-extern double arriveTime1, arriveTime2, arriveTime3, arriveTime4;
-extern double processTime1, processTime2, processTime3, processTime4;
+#define AR_TIME1 1
+#define AR_TIME2 5
+#define AR_TIME3 0
+#define AR_TIME4 3
 
-namespace queue {
+#define PROC_TIME1 0
+#define PROC_TIME2 4
+#define PROC_TIME3 0
+#define PROC_TIME4 1
+
+
+namespace Queue{
     struct Queue;
     struct DynamicQueue;
-    struct Node;
     struct Request;
-    struct time;
+    struct Node;
+    struct TimeRanges;
+    struct WorksTime;
 
-    void intro();
-    void infTimeRange();
-    void changeTimeRange();
-    void checkStream(std::basic_istream<char> &str);
-    void simulation();
-    void addElements(Queue &queue, Queue &queue2);
-    Request generateElement(double arTime1, double arTime2,
-                            double procTime1, double procTime2);
-    Node* generateDynamElement(double arrTime1, double arrTime2,
-                              double procTime1, double procTime2);
-    void addElements(DynamicQueue &queue, DynamicQueue &queue2);
-    int addElement(Queue &queue, Request req);
-    int addElement(DynamicQueue &queue, Node &req);
-    void process(Queue &queue1, Queue &queue2, time &tm);
-    void updateQueueDisk(Queue &que);
-    void updateQueueDisk(DynamicQueue &que);
-    void process(DynamicQueue &queue1, DynamicQueue &queue2, time &tm);
-    void simulationInfo(Queue &queue1, Queue &queue2, time &tm);
-    void simulationInfo(DynamicQueue &queue1, DynamicQueue &queue2);
-    void simulationResult(Queue &queue1, Queue &queue2, time &tm);
-    void simulationREsult(DynamicQueue &queue1, DynamicQueue &queue2);
+    void setUp(TimeRanges &tmR);
+    void timeRangesInfo(TimeRanges &tmR);
+    void checkStream(std::basic_istream<char> &strm);
+    void simulation(TimeRanges &tmR);
 }
 
-struct queue::time{
-    time();
-    int sumLengQueue1;
-    int sumLengQueue2;
-    double ARRIVE_TIME_TYPE1;
-    double ARRIVE_TIME_TYPE2;
-    double DEPARTURE_TIME;
-    double PROCESS_TIME;
-    double GLOBAL_TIME;
+struct Queue::TimeRanges{
+    TimeRanges(double t1 = AR_TIME1, double t2 = AR_TIME2, double t3 = AR_TIME3, double t4 = AR_TIME4,
+               double p1 = PROC_TIME1, double p2 = PROC_TIME2, double p3 = PROC_TIME3, double p4 = PROC_TIME4);
+
+    double arriveTime1, arriveTime2, arriveTime3, arriveTime4;
+    double processTime1, processTime2, processTime3, processTime4;
 };
 
-struct queue::Request{
-    Request();
-    double tArrive;
-    double tProcess;
+struct Queue::WorksTime{
+    WorksTime();
+    double arriveTime1;
+    double arriveTime2;
+    double processTime;
+    double departureTime;
 };
 
-struct queue::Queue{
+struct Queue::Request{
+    Request(double arrTime = 0, double procTime = 0);
+    double arriveTime;
+    double processTime;
+};
+
+struct Queue::Queue{
     Queue();
-    Request requests[QUEUE_SIZE];
-    int loggedItems;
-    int releasedItems;
-    int count;
+    Request items[QUEUE_MAX_SIZE];
     Request *pIn;
     Request *pOut;
-    Request *begin;
-    Request *end;
-};
-
-struct queue::DynamicQueue{
-    DynamicQueue();
-    int loggedItems;
-    int releasedItems;
-    Node *pIn;
-    Node *pOut;
     int count;
+    int arrivedItems;
+    int departedItems;
 };
 
-struct queue::Node{
+struct Queue::Node{
     Node();
-    Request item;
+    Request items;
     Node *next;
+};
+
+struct Queue::DynamicQueue{
+    DynamicQueue();
+    Node *pOut;
+    Node *pIn;
+    int count;
+    int arrivedItems;
+    int departedItems;
 };
 
 #endif // QUEUE_H
