@@ -3,6 +3,7 @@
 #include <iostream>
 #include <limits>
 #include <random>
+#include <chrono>
 
 Queue::TimeRanges::TimeRanges(double t1, double t2, double t3, double t4,
                               double p1, double p2, double p3, double p4){
@@ -160,17 +161,25 @@ void Queue::addReq(DynamicQueue &queue, Node &req){
     queue.count++;
 }
 
-void Queue::extensionQueues(Queue &queue1, DynamicQueue &queue2, TimeRanges &tmr){
+void Queue::extensionQueues(Queue &queue1, DynamicQueue &queue2, TimeRanges &tmr, SimulParameters &smp){
     int type = rand() / 100;
     Request req;
     if (type % 2 == 0){
+        std::clock_t start = std::clock();
         req = generateRequest(tmr.arriveTime1, tmr.arriveTime2,
                               tmr.processTime1, tmr.processTime2);
         addReq(queue1, req);
+        std::clock_t end = std::clock();
+        smp.addTime1 =  (end - start);
+
     } else {
+        std::clock_t start = std::clock();
+
         Node *node = generateNode(tmr.arriveTime3, tmr.arriveTime4,
                                   tmr.processTime3, tmr.processTime4);
         addReq(queue2, *node);
+        std::clock_t end = std::clock();
+        smp.addTime2 = (double) (end - start);
     }
 }
 
@@ -199,18 +208,24 @@ void Queue::processingReq(Queue &queue1, DynamicQueue &queue2, SimulParameters &
         arriveTime1 = smp.arriveTime1 + queue1.pOut->arriveTime;
         arriveTime2 = smp.arriveTime2 + queue2.pOut->items.arriveTime;
         if (smp.departureTime >= arriveTime1){
+            std::clock_t start = std::clock();
             smp.departureTime += queue1.pOut->processTime;
             smp.arriveTime1 += queue1.pOut->arriveTime;
             smp.sumElementsQueue1 += queue1.count;
             smp.processTime += queue1.pOut->processTime;
             updateQueueParam(queue1);
+            std::clock_t end = std::clock();
+            smp.procTime1 = end - start;
 
         } else if (smp.departureTime >= arriveTime2){
+            std::clock_t start = clock();
             smp.departureTime += queue2.pOut->items.processTime;
             smp.arriveTime2 += queue2.pOut->items.arriveTime;
             smp.sumElementsQueue2 += queue2.count;
             smp.processTime += queue2.pOut->items.processTime;
             updateQueueParam(queue2);
+            std::clock_t end = clock();
+            smp.procTime2 = end - start;
 
         } else {
             if (arriveTime1 <= arriveTime2){
@@ -225,11 +240,14 @@ void Queue::processingReq(Queue &queue1, DynamicQueue &queue2, SimulParameters &
 
         arriveTime1 = smp.arriveTime1 + queue1.pOut->arriveTime;
         if (smp.departureTime >= arriveTime1){
+            std::clock_t start = clock();
             smp.departureTime += queue1.pOut->processTime;
             smp.arriveTime1 = queue1.pOut->arriveTime;
             smp.sumElementsQueue1 += queue1.count;
             smp.processTime += queue1.pOut->processTime;
             updateQueueParam(queue1);
+            std::clock_t end = clock();
+            smp.procTime1 = end - start;
 
         } else {
             smp.departureTime = arriveTime1;
@@ -239,11 +257,14 @@ void Queue::processingReq(Queue &queue1, DynamicQueue &queue2, SimulParameters &
 
         arriveTime2 = smp.arriveTime2 + queue2.pOut->items.arriveTime;
         if (smp.departureTime >= arriveTime2){
+            std::clock_t start = clock();
             smp.departureTime += queue2.pOut->items.processTime;
             smp.arriveTime2 = queue2.pOut->items.arriveTime;
             smp.sumElementsQueue2 += queue2.count;
             smp.processTime += queue2.pOut->items.processTime;
             updateQueueParam(queue2);
+            std::clock_t end = clock();
+            smp.procTime2 = end - start;
         }
     }
 }
@@ -267,6 +288,11 @@ void Queue::simulationResult(Queue q, DynamicQueue q2, SimulParameters smp){
     std::cout << "Arrive 2nd type: " << q2.arrivedItems << std::endl;
     std::cout << "Departed 1st type: " << q.departedItems << std::endl;
     std::cout << "Depatred 2nd type: " << q2.departedItems << std::endl;
+    std::cout << std::endl;
+
+    std::cout << "### Times ###" << std::endl;
+    std::cout << "Time to add: " << smp.addTime1 << " ::: " << smp.addTime2 << std::endl;
+    std::cout << "Time to process: " << smp.procTime1 << " ::: " << smp.procTime2 << std::endl;
 
     int answer = 0;
     std::cout << "Show map of memory? (1 Yes/ 0 No)" << std::endl;
@@ -304,7 +330,7 @@ void Queue::simulationQueue(TimeRanges &tmr){
     DynamicQueue queue2;
     int infoLvl = 100;
     for (;;){
-        extensionQueues(queue1, queue2, tmr);
+        extensionQueues(queue1, queue2, tmr, param);
         processingReq(queue1, queue2, param);
 
         if (queue1.departedItems == infoLvl){

@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <chrono>
 
 #define QUEUE_MAX_SIZE 100
 #define PROCESS_LIMIT 1000
@@ -36,7 +37,7 @@ namespace Queue{
     void simulationQueue(TimeRanges &tmr);
     Request generateRequest(double arrTime1, double arrTime2, double procTime1, double procTime2);
     Node* generateNode(double arrTime1, double arrTime2, double procTime1, double procTime2);
-    void extensionQueues(Queue &queue1, DynamicQueue &queue2, TimeRanges &tmr);
+    void extensionQueues(Queue &queue1, DynamicQueue &queue2, TimeRanges &tmr, SimulParameters &smp);
     void updateQueueParam(Queue &q);
     void updateQueueParam(DynamicQueue &q);
     void processingReq(Queue &queue1, DynamicQueue &queue2, SimulParameters &smp);
@@ -94,6 +95,8 @@ struct Queue::SimulParameters{
     double departureTime;
     int sumElementsQueue1;
     int sumElementsQueue2;
+    std::clock_t addTime1, addTime2;
+    std::clock_t procTime1, procTime2;
     Node memoryMap[2000];
 };
 
