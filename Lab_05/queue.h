@@ -4,7 +4,7 @@
 #include <iostream>
 #include <cstdlib>
 
-#define QUEUE_MAX_SIZE 1000
+#define QUEUE_MAX_SIZE 100
 #define PROCESS_LIMIT 1000
 
 #define AR_TIME1 1
@@ -24,12 +24,25 @@ namespace Queue{
     struct Request;
     struct Node;
     struct TimeRanges;
-    struct WorksTime;
+    struct SimulParameters;
 
     void setUp(TimeRanges &tmR);
     void timeRangesInfo(TimeRanges &tmR);
     void checkStream(std::basic_istream<char> &strm);
     void simulation(TimeRanges &tmR);
+    void shomMemoryMap(SimulParameters &smp, int count);
+    void simulationResult(Queue q, DynamicQueue q2, SimulParameters smp);
+    void simulationInfo(Queue q, DynamicQueue q2, SimulParameters smp);
+    void simulationQueue(TimeRanges &tmr);
+    Request generateRequest(double arrTime1, double arrTime2, double procTime1, double procTime2);
+    Node* generateNode(double arrTime1, double arrTime2, double procTime1, double procTime2);
+    void extensionQueues(Queue &queue1, DynamicQueue &queue2, TimeRanges &tmr);
+    void updateQueueParam(Queue &q);
+    void updateQueueParam(DynamicQueue &q);
+    void processingReq(Queue &queue1, DynamicQueue &queue2, SimulParameters &smp);
+
+    void addReq(Queue &queue, Request &req);
+    void addReq(DynamicQueue &queue, Node &req);
 }
 
 struct Queue::TimeRanges{
@@ -40,13 +53,7 @@ struct Queue::TimeRanges{
     double processTime1, processTime2, processTime3, processTime4;
 };
 
-struct Queue::WorksTime{
-    WorksTime();
-    double arriveTime1;
-    double arriveTime2;
-    double processTime;
-    double departureTime;
-};
+
 
 struct Queue::Request{
     Request(double arrTime = 0, double procTime = 0);
@@ -77,6 +84,17 @@ struct Queue::DynamicQueue{
     int count;
     int arrivedItems;
     int departedItems;
+};
+
+struct Queue::SimulParameters{
+    SimulParameters();
+    double arriveTime1;
+    double arriveTime2;
+    double processTime;
+    double departureTime;
+    int sumElementsQueue1;
+    int sumElementsQueue2;
+    Node memoryMap[2000];
 };
 
 #endif // QUEUE_H

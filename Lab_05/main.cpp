@@ -4,7 +4,7 @@
 int main(){
     Queue::TimeRanges tmr;
     Queue::setUp(tmr);
-    Queue::simulation;
+    Queue::simulation(tmr);
 
     return 0;
 }
