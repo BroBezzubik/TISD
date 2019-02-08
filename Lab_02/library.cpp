@@ -145,7 +145,6 @@ void library::addBook(Library &lib, const char *libFile){
             if (childType != CHILD_TYPE::CHILD_POEM && childType != CHILD_TYPE::FAIRY_TAILS){
                 throw "Invalid type!";
             }
-            //todo Довавить доволнение детской книги
             break;
         default:
             throw "Invalid book type!";
@@ -164,6 +163,184 @@ void library::addBook(Library &lib, const char *libFile){
     } catch (const char *msg){
         std::cerr << msg << std::endl;
     }
+}
+
+void library::deleteBook(Library &lib, const char *libFile){
+    std::fstream libStream;
+    libStream.open(libFile, std::ios::out | std::ios::trunc);
+    if (libStream.is_open()){
+        int bookIndex;
+        std::cout << "Input index book: ";
+        std::cin >> bookIndex;
+
+        if (bookIndex > lib.bookCout || bookIndex < 0){
+            throw "Invalid Index!";
+        }
+        if (lib.bookCout == 0){
+            std::cout << "Table is empty!";
+        } else {
+            // delete element from main table
+            for(int index = bookIndex; index < lib.bookCout - 1; index++){
+                lib.books[index] = lib.books[index + 1];
+            }
+            // delete element from key table
+            int foundElement = 0;
+            for (int index = 0; index < lib.bookCout - 1; index++){
+                if (lib.keys[index].index == bookIndex){
+                    foundElement = 1;
+                }
+                if (foundElement == 1){
+                    lib.keys[index] = lib.keys[index + 1];
+                }
+            }
+            lib.bookCout = lib.bookCout - 1;
+            libStream.close();
+            for (int index = 0; index < lib.bookCout; index++){
+                library::uploadBook(&lib.books[index], libFile);
+            }
+        }
+    } else {
+        throw "Can't open file!!!";
+    }
+}
+
+void library::search(Library &lib){
+    library::BOOK_TYPE typeBook;
+    int type;
+    std::cout << "0) TECH" << std::endl;
+    std::cout << "1) ART" << std::endl;
+    std::cout << "2) CHILD" << std::endl;
+    std::cout << "Input book type: ";
+    std::cin >> type;
+
+    if (type != 0 || type != 1 || type != 2){}
+    else throw "Invalid Type!!!";
+
+    typeBook = (library::BOOK_TYPE) type;
+    for (int index = 0; index < lib.bookCout; index++){
+        if (lib.books[index].bookType == typeBook){
+            outPutBook(lib.books[index], index);
+        }
+    }
+}
+
+int library::cmpBooks(const void *tmp1, const void *tmp2){
+    library::Book *book1 = (library::Book*) tmp1;
+    library::Book *book2 = (library::Book*) tmp2;
+    if (book1->pageCount < book2->pageCount){ return -1; }
+    if (book1->pageCount == book2->pageCount){ return 0; }
+    if (book1->pageCount > book2->pageCount){ return 1; }
+}
+
+int library::cmpKeys(const void *tmp1, const void *tmp2){
+    library::Key *key1 = (library::Key*) tmp1;
+    library::Key *key2 = (library::Key*) tmp2;
+    if (key1->page < key2->page){ return -1; }
+    if (key1->page == key2->page){ return 0; }
+    if (key1->page > key2->page){ return 1; }
+}
+
+void library::bubbleSort(Book *books, int count){
+    for (int i = 0; i < count - 1; i++){
+        for (int j = 0; j < count - i - 1; j++){
+            if (books[j].pageCount > books[j + 1].pageCount){
+                Book tmp = books[j];
+                books[j] = books[j + 1];
+                books[j + 1] = tmp;
+            }
+        }
+    }
+}
+
+void library::bubbleSort(Key *keys, int count){
+    for (int i = 0; i < count - 1; i++){
+        for (int j = 0; j < count - i - 1; j++){
+            if (keys[j].page > keys[j + 1].page){
+                Key tmp = keys[j];
+                keys[j] = keys[j + 1];
+                keys[j + 1] = tmp;
+            }
+        }
+    }
+}
+
+void library::sort(Library &lib, const char *fileName){
+    std::cout << "####                ####" << std::endl;
+    std::cout << "#### Selected Sort! ####" << std::endl;
+    std::cout << "####                ####" << std::endl << std::endl;
+
+    std::clock_t start;
+    double durationQsortKeyTable;
+    double durationBubbleSortKeyTable;
+    double durationQsortBookTable;
+    double durationBubbleSortBookTable;
+    std::cout << "####################################" << std::endl;
+    std::cout << "#### First is Qsort of library! ####" << std::endl;
+    std::cout << "####################################" << std::endl;
+    std::cout << std::endl;
+
+    start = std::clock();
+    std::qsort(lib.keys, lib.bookCout, sizeof(library::Key), cmpKeys);
+    durationQsortKeyTable = (std::clock() - start) / (double) CLOCKS_PER_SEC;
+
+    std::cout << "#### Sorted library by KEYS ####" << std::endl;
+    std::cout << std::endl;
+
+    library::outPut(lib.books, lib.bookCout);
+    library::outPut(lib.keys, lib.bookCout);
+
+    library::loadLib(lib, fileName);
+
+    start = std::clock();
+    std::qsort(lib.books, lib.bookCout, sizeof(library::Book), cmpBooks);
+    durationQsortBookTable = (std::clock() - start) / (double) CLOCKS_PER_SEC;
+
+    std::cout << "#### Sorted library by Book Table ####" << std::endl;
+    std::cout << std::endl;
+
+    library::outPut(lib.books, lib.bookCout);
+    library::outPut(lib.keys, lib.bookCout);
+
+    library::loadLib(lib, fileName);
+    std::cout << "###########################################" << std::endl;
+    std::cout << "#### Secound is BubbleSort of library! ####" << std::endl;
+    std::cout << "###########################################" << std::endl;
+    std::cout << std::endl;
+    std::cout << "### Sorted library by Book Table ###" << std::endl;
+    std::cout << std::endl;
+
+    start = std::clock();
+    library::bubbleSort(lib.books, lib.bookCout);
+    durationBubbleSortBookTable = (std::clock() - start) / (double) CLOCKS_PER_SEC;
+
+    library::outPut(lib.books, lib.bookCout);
+    library::outPut(lib.keys, lib.bookCout);
+
+    std::cout << "### Sorted library by Keys ###" << std::endl;
+    std::cout << std::endl;
+
+    library::loadLib(lib, fileName);
+
+    start = std::clock();
+    library::bubbleSort(lib.keys, lib.bookCout);
+    durationBubbleSortKeyTable = (std::clock() - start) / (double) CLOCKS_PER_SEC;
+
+    library::outPut(lib.books, lib.bookCout);
+    library::outPut(lib.keys, lib.bookCout);
+
+    std::cout << "Time of Qsort sorts!!!" << std::endl;
+    std::cout << "Sort of books: " << durationQsortBookTable << std::endl;
+    std::cout << "Sort of Keys: " << durationQsortKeyTable << std:: endl;
+
+    std::cout << std::endl;
+    std::cout << "Time of Bubble sorts!!!" << std::endl;
+    std::cout << "Sort of books: " << durationBubbleSortBookTable << std::endl;
+    std::cout << "Sort of Keys: " << durationBubbleSortKeyTable << std::endl;
+    std::cout << std::endl;
+
+    std::cout << "### Informantion in % ###" << std::endl;
+    std::cout << "Bubble Book vs Bubble Keys: " << durationBubbleSortBookTable / durationBubbleSortKeyTable * 100 << std::endl;
+    std::cout << "Qsort Book vs Qsort Keys: " << durationQsortBookTable / durationQsortKeyTable * 100 << std::endl;
 }
 
 void library::uploadBook(Book *book, const char *libFile){
@@ -201,6 +378,7 @@ library::OPERATION library::getOperation(){
         std::cout << "2) Delete Book" << std::endl;
         std::cout << "3) Out put" << std::endl;
         std::cout << "4) Sort" << std::endl;
+        std::cout << "5) Search" << std::endl;
 
         int operation = -1;
         std::cout << ">> ";
@@ -208,7 +386,7 @@ library::OPERATION library::getOperation(){
 
         OPERATION operKey;
         if (operation == 0 || operation == 1 || operation == 2|| operation == 3 ||
-                operation == 4){
+                operation == 4 || operation == 5){
             return operKey = (OPERATION) operation;
         }
     }
@@ -254,7 +432,7 @@ std::string library::getBookType(CHILD_TYPE type){
         name = "FAIRY TAILS";
         break;
     case CHILD_TYPE::CHILD_POEM:
-        name = "POEM";
+        name = "CHILD_POEM";
         break;
     default:
         break;
@@ -286,7 +464,7 @@ void library::outPutBook(Book &book, int index){
     std::cout << index << ')';
     std::cout.width(0);
     std::cout << "Book Name: ";
-    std::cout.width(20);
+    std::cout.width(25);
     std::cout << std::right << book.bookName << '|';
     std::cout.width(0);
     std::cout << "Author: ";
@@ -294,18 +472,18 @@ void library::outPutBook(Book &book, int index){
     std::cout <<std::right << book.author << '|';
     std::cout.width(0);
     std::cout << "Publisher: ";
-    std::cout.width(20);
+    std::cout.width(25);
     std::cout <<std::right << book.publisher << '|';
     std::cout.width(0);
     std::cout << "Pages: ";
-    std::cout.width(10);
+    std::cout.width(5);
     std::cout <<std::right << book.pageCount << '|';
 
     switch (book.bookType) {
     case BOOK_TYPE::TECH:
         std::cout.width(0);
         std::cout << "Type: ";
-        std::cout.width(10);
+        std::cout.width(15);
         std::cout << getBookType(book.type.tech.bookType) << '|';
         std::cout.width(0);
         std::cout << "Year: ";
@@ -315,21 +493,19 @@ void library::outPutBook(Book &book, int index){
     case BOOK_TYPE::ART:
         std::cout.width(0);
         std::cout << "Type: ";
-        std::cout.width(10);
+        std::cout.width(15);
         std::cout << getBookType(book.type.art.bookType) << '|';
         break;
     case BOOK_TYPE::CHILD:
         std::cout.width(0);
         std::cout << "Type: ";
-        std::cout.width(10);
+        std::cout.width(15);
         std::cout << getBookType(book.type.child.bookType) << '|';
         break;
     default:
         break;
     }
-
     std::cout << std::endl;
-
 }
 
 void library::outPut(Book *books, int count){
@@ -346,8 +522,10 @@ void library::outKeyToBook(Library lib){
     for (int index = 0; index < lib.bookCout; index++){
         int BookIndex = lib.keys[index].index;
         outPutBook(lib.books[BookIndex], index);
+        std::cout << BookIndex << std::endl;
     }
 }
+
 
 void library::selectOperation(OPERATION oper, Library &lib, const char *LibFile){
     switch (oper) {
@@ -358,22 +536,23 @@ void library::selectOperation(OPERATION oper, Library &lib, const char *LibFile)
         library::addBook(lib, LibFile);
         break;
     case OPERATION::DELETE:
+        library::deleteBook(lib, LibFile);
         break;
     case OPERATION::OUT_PUT:
         library::outPut(lib.books, lib.bookCout);
         library::outPut(lib.keys, lib.bookCout);
-        library::outKeyToBook(lib);
+        //library::outKeyToBook(lib);
         break;
     case OPERATION::SORT:
+        library::sort(lib, LibFile);
         break;
     case OPERATION::SEARCH:
-        //library::search(lib);
+        library::search(lib);
         break;
     default:
         break;
     }
 }
-
 
 void library::loop(Library &lib, const char *libFile){
     for (;;){
