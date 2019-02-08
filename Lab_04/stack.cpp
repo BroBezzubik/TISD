@@ -71,6 +71,8 @@ stack::STACK_OPERATIONS stack::getOper(){
 }
 
 void stack::selectOper(STACK_OPERATIONS keyOper, stack &st){
+    std::clock_t start;
+    double duration;
     switch (keyOper) {
     case STACK_OPERATIONS::EXIT:
         break;
@@ -78,14 +80,20 @@ void stack::selectOper(STACK_OPERATIONS keyOper, stack &st){
     case STACK_OPERATIONS::ADD:
         std::cout << std::endl;
         std::cout << "### Selected Add element! ###" << std::endl;
+        start = std::clock();
         addElement(st);
+        duration = (std::clock() - start) / (double) CLOCKS_PER_SEC;
+        std::cout << "Duration of Add: " << duration << std::endl;
         std::cout << std::endl;
         break;
 
     case STACK_OPERATIONS::POP:
         std::cout << std::endl;
         std::cout << "### Selected 'Pop'! ###" << std::endl;
+        start = std::clock();
         pop(st);
+        duration = (std::clock() - start) / (double) CLOCKS_PER_SEC;
+        std::cout << "Duration of Pop: " << duration << std::endl;
         std::cout << std::endl;
         break;
 
@@ -93,8 +101,6 @@ void stack::selectOper(STACK_OPERATIONS keyOper, stack &st){
         std::cout << std::endl;
         std::cout << "### Selected Out Stream! ###";
         std::cout << std::endl;
-        std::clock_t start;
-        double duration;
         start = std::clock();
         revOutStream(st);
         duration = (std::clock() - start) / (double) CLOCKS_PER_SEC;
@@ -115,6 +121,8 @@ void stack::selectOper(STACK_OPERATIONS keyOper, stack &st){
 }
 
 void stack::selectOper(STACK_OPERATIONS keyOper, dynamic_stack &st){
+    std::clock_t start;
+    double duration;
     switch (keyOper) {
     case STACK_OPERATIONS::EXIT:
         break;
@@ -122,14 +130,20 @@ void stack::selectOper(STACK_OPERATIONS keyOper, dynamic_stack &st){
     case STACK_OPERATIONS::ADD:
         std::cout << std::endl;
         std::cout << "### Selected Add element! ###" << std::endl;
+        start = std::clock();
         addElement(st);
+        duration = (std::clock() - start) / (double) CLOCKS_PER_SEC;
+        std::cout << "Duration of add: " << duration << std::endl;
         std::cout << std::endl;
         break;
 
     case STACK_OPERATIONS::POP:
         std::cout << std::endl;
+        start = std::clock();
         std::cout << "### Selected 'Pop'! ###" << std::endl;
         pop(st);
+        duration = (std::clock() - start) / (double) CLOCKS_PER_SEC;
+        std::cout << "Duration of pop: " << duration << std::endl;
         std::cout << std::endl;
         break;
 
@@ -168,11 +182,16 @@ void stack::addElement(dynamic_stack &st){
         std::string tmp;
         while(std::getline(inBuf, tmp, ' ')){
             if (st.count < STACK_MAX_SIZE){
+                std::clock_t start;
+                double duration;
+                start = std::clock();
                 stack_node *node = new stack_node;
                 node->next = st.PS;
                 st.PS = node;
                 node->element = tmp;
                 st.count++;
+                duration = (std::clock() - start) / (double) CLOCKS_PER_SEC;
+                std::cout << "Real duration: " << duration << std::endl;
             } else {
                 std::cout << "Stack is full. Delete some elements before add!";
                 break;
@@ -193,8 +212,13 @@ void stack::addElement(stack &st){
         std::string tmp;
         while(std::getline(inBuf, tmp, ' ')){
             if (st.count < STACK_MAX_SIZE){
+                std::clock_t start;
+                double duration;
+                start = std::clock();
                 st.elements[st.count] = tmp;
                 st.count++;
+                duration = (std::clock() - start) / (double) CLOCKS_PER_SEC;
+                std::cout << "Real duration of add: " << duration << std::endl;
             } else {
                 std::cout << "Stack is full. Delete some elements before add!";
                 break;
